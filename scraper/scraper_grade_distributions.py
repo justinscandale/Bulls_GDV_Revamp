@@ -1,0 +1,124 @@
+from bs4 import BeautifulSoup
+from pandas import DataFrame
+import requests 
+import scraper_professors
+
+# Parses the grade distribution page
+'''
+Parameters:
+Full link for page with grade dist data
+-> String
+
+Return:
+Pandas Datafram 
+Course_Prefix, Course_Num, Instruction_Type, CRN, A_Num, B_Num, C_Num, D_Num, F_Num, I_Num, S_Num, U_Num, W_Num, O_Num, Total_Grades + Prof_Scraper Content
+
+-> Tuple
+'''
+def parse_grade_dist_page(link):
+
+    try:
+        #Make request & Check if succesful
+        response = requests.get(link)
+        response.raise_for_status() #Raises HTTP error for bad responses
+
+        #Parse page with beautifulsoup
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        #Dataframe to store scraped data
+        #df = DataFrame()
+
+        # Iterate through the rows of the table & extract columns
+        rows = soup.find_all('tr')
+        for i, row in enumerate(rows):
+            
+            course_data =   {
+                "Course_Prefix": None,
+                "Course_Num": None,
+                "Instruction_Type": None,
+                "CRN": None,
+                "A_Num": None,
+                "B_Num": None,
+                "C_Num": None,
+                "D_Num": None,
+                "F_Num": None,
+                "I_Num": None,
+                "S_Num": None,
+                "U_Num": None,
+                "W_Num": None,
+                "O_Num": None,
+                "Total_Grades": None,
+                "Course_Name": None, 
+                "Prof_Lname": None, 
+                "Prof_Fname": None 
+            }
+
+            if i > 16:  #Skips to content 
+                #Boolean to check if row is valid to be stored
+                is_valid_row = True
+
+                cols = row.findAll('td')
+
+                #Skip logic for empty rows
+                if not cols: is_valid_row = False
+
+                for j, col in enumerate(cols):
+
+                    if not is_valid_row:
+                        break
+
+                    match j:
+                        case 0:
+                            course_info = col.get_text().split()
+                            if len(course_info) != 3 or course_info[2][-1]!=')':
+                                is_valid_row = False
+                            else:
+                                course_href = col.find('a',href=True).get('href')
+                                course_name, prof_last_name, prof_first_name = scraper_professors.parse_professor_page(course_href)
+                                course_data['Course_Name'] = course_name
+                                course_data['Prof_Fname'] = prof_first_name
+                                course_data['Prof_Lname'] = prof_last_name
+                                
+                                course_data["Course_Prefix"] = course_info[0][0:3]
+                                course_data["Course_Num"] = course_info[0][4:8]
+                                course_data["Instruction_Type"] = course_info[1][-1]
+                                course_data["CRN"] = course_info[2][1:6]
+
+                        case 1:
+                            course_data["A_Num"] = col.get_text()
+                        case 3:
+                            course_data["B_Num"] = col.get_text()
+                        case 5:
+                            course_data["C_Num"] = col.get_text()
+                        case 7:
+                            course_data["D_Num"] = col.get_text()
+                        case 9:
+                            course_data["F_Num"] = col.get_text()
+                        case 11:
+                            course_data["I_Num"] = col.get_text()
+                        case 13:
+                            course_data["S_Num"] = col.get_text()
+                        case 15:
+                            course_data["U_Num"] = col.get_text()
+                        case 17:
+                            course_data["W_Num"] = col.get_text()
+                        case 19:
+                            course_data["O_Num"] = col.get_text()
+                        case 21:
+                            course_data["Total_Grades"] = col.get_text()
+               
+               #TRANSLATE THIS IF TO AN ADD TO DF
+                if is_valid_row:        
+                    print(course_data)
+
+        #return Course_Prefix, Course_Num, Instruction_Type, CRN, A_Num, B_Num, C_Num, D_Num, F_Num, I_Num, S_Num, U_Num, W_Num, O_Num, Total_Grades
+    
+    except requests.exceptions.RequestException as e:
+        print(f"Request error: {e}")
+        return []
+
+    except Exception as e:
+        print(f"ERROR ON PRASE_GRADE_DIST: {e}")
+        return []
+
+parse_grade_dist_page("http://localhost:8000/fall24/cop.html")
