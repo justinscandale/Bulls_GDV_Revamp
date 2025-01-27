@@ -1,11 +1,13 @@
 import csv
+import pandas as pd
+import os
 
 # Base URLs for scraping
 GRADE_DIST_URL = "https://usfweb.usf.edu/dss/infocenter/?silverheader=&report_category=ADM&report_type=SGDIS&reportid=728576"
 PROF_URL = "https://usfweb.usf.edu/dss/infocenter"
 
 # Course Prefixes
-COURSE_PREFIXES = [
+_COURSE_PREFIXES = [
     "ADE", "ADV", "AFA", "AFH", "AFR", "AMH", "AML", "AMS", "ANG", "ANS", "ANT", "APK", 
     "ARA", "ARC", "ARH", "ART", "ASL", "ASN", "AST", "ATR", "BCH", "BME", "BOT", "BSC", "BUL", 
     "CAI", "CAP", "CCJ", "CDA", "CEG", "CEN", "CES", "CGN", "CGS", "CHD", "CHI", "CHM", "CHS", 
@@ -29,21 +31,45 @@ COURSE_PREFIXES = [
     "URP", "URS", "VIC", "WOH", "WST", "ZOO"
 ]
 
+#Dict to store all data scraped
+_course_data =   {
+"Course_Prefix": None,
+"Course_Num": None,
+"Instruction_Type": None,
+"CRN": None,
+"A_Num": None,
+"B_Num": None,
+"C_Num": None,
+"D_Num": None,
+"F_Num": None,
+"I_Num": None,
+"S_Num": None,
+"U_Num": None,
+"W_Num": None,
+"O_Num": None,
+"Total_Grades": None,
+"Course_Name": None, 
+"Prof_Lname": None, 
+"Prof_Fname": None 
+}
+
+#Check if a file exists
+def file_exists(file_name):
+    return os.path.exists(file_name)
+
 # Save to CSV 
-def save_to_csv(data, filename="output.csv"):
+def save_to_csv(data_frame, filename):
     """
-    Saves a list of dictionaries to a CSV file.
+    Saves a pandas data frame to a CSV file.
     """
-    if not data:
+    if data_frame.empty:
         print("No data to save.")
         return
     
-    keys = data[0].keys()
-    with open(filename, mode="w", newline="") as file:
-        writer = csv.DictWriter(file, fieldnames=keys)
-        writer.writeheader()
-        writer.writerows(data)
-    print(f"Data saved to {filename}")
+    full_file_name = "data/" + filename
+
+    data_frame.to_csv(full_file_name, mode='a',index=False, header= not file_exists(full_file_name))
+    print(f"Data saved to {full_file_name}")
 
 # Data Cleaning
 def clean_text(text):

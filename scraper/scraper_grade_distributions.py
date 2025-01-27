@@ -2,21 +2,21 @@ from bs4 import BeautifulSoup
 from pandas import DataFrame
 import requests 
 import scraper_professors
+from utils import _course_data
 
 # Parses the grade distribution page
-'''
+def parse_grade_dist_page(link):
+    '''
 Parameters:
 Full link for page with grade dist data
 -> String
 
 Return:
 Pandas Datafram 
-Course_Prefix, Course_Num, Instruction_Type, CRN, A_Num, B_Num, C_Num, D_Num, F_Num, I_Num, S_Num, U_Num, W_Num, O_Num, Total_Grades + Prof_Scraper Content
+(Course_Prefix, Course_Num, Instruction_Type, CRN, A_Num, B_Num, C_Num, D_Num, F_Num, I_Num, S_Num, U_Num, W_Num, O_Num, Total_Grades + Prof_Scraper Content)
 
 -> Tuple
-'''
-def parse_grade_dist_page(link):
-
+    '''
     try:
         #Make request & Check if succesful
         response = requests.get(link)
@@ -30,28 +30,13 @@ def parse_grade_dist_page(link):
 
         # Iterate through the rows of the table & extract columns
         rows = soup.find_all('tr')
+
+        #List to store all dicts of course data by row
+        row_data = []
+
         for i, row in enumerate(rows):
             
-            course_data =   {
-                "Course_Prefix": None,
-                "Course_Num": None,
-                "Instruction_Type": None,
-                "CRN": None,
-                "A_Num": None,
-                "B_Num": None,
-                "C_Num": None,
-                "D_Num": None,
-                "F_Num": None,
-                "I_Num": None,
-                "S_Num": None,
-                "U_Num": None,
-                "W_Num": None,
-                "O_Num": None,
-                "Total_Grades": None,
-                "Course_Name": None, 
-                "Prof_Lname": None, 
-                "Prof_Fname": None 
-            }
+            course_data =  _course_data.copy()
 
             if i > 16:  #Skips to content 
                 #Boolean to check if row is valid to be stored
@@ -78,7 +63,7 @@ def parse_grade_dist_page(link):
                                 course_data['Course_Name'] = course_name
                                 course_data['Prof_Fname'] = prof_first_name
                                 course_data['Prof_Lname'] = prof_last_name
-                                
+
                                 course_data["Course_Prefix"] = course_info[0][0:3]
                                 course_data["Course_Num"] = course_info[0][4:8]
                                 course_data["Instruction_Type"] = course_info[1][-1]
@@ -109,10 +94,12 @@ def parse_grade_dist_page(link):
                
                #TRANSLATE THIS IF TO AN ADD TO DF
                 if is_valid_row:        
-                    print(course_data)
+                    row_data.append(course_data)
 
-        #return Course_Prefix, Course_Num, Instruction_Type, CRN, A_Num, B_Num, C_Num, D_Num, F_Num, I_Num, S_Num, U_Num, W_Num, O_Num, Total_Grades
-    
+        #Dataframe to store results
+        df = DataFrame(row_data)
+        return df 
+       
     except requests.exceptions.RequestException as e:
         print(f"Request error: {e}")
         return []
@@ -121,4 +108,5 @@ def parse_grade_dist_page(link):
         print(f"ERROR ON PRASE_GRADE_DIST: {e}")
         return []
 
-parse_grade_dist_page("http://localhost:8000/fall24/cop.html")
+if __name__ == "main":
+    print(parse_grade_dist_page("http://localhost:8000/fall24/cop.html"))

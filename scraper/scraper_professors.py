@@ -5,7 +5,8 @@ from utils import PROF_URL
 
 
 # Parses the professor / course info page
-'''
+def parse_professor_page(link):
+    '''
 Parameters:
 Extension to link for scraping  
 -> String
@@ -14,8 +15,6 @@ Return:
 Course_Name, Prof_last_name, Prof_first_name
 -> Tuple
 '''
-def parse_professor_page(link):
-
     #Create full link to scrape
     full_link = PROF_URL + "/" + link
 
