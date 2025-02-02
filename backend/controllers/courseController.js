@@ -11,6 +11,35 @@ const getPrefixes = async(req,res) => {
     }
 };
 
+//controler to get a professors grade dist data
+const getProfessorGradeData = async(req,res) => {
+    const last = req.query.lname 
+    const first = req.query.fname 
+
+    try{
+        //get professors 
+        if (last && first) {
+            const result = await query(`SELECT SUM(a_num) as A, SUM(b_num) as B, SUM(c_num) as C, SUM(d_num) as D, 
+                                        SUM(f_num) as F, SUM(a_num+b_num+c_num+d_num+f_num) as TOTAL, prof_lname, prof_fname
+                FROM course_grades 
+                WHERE prof_lname=$1 AND prof_fname=$2
+                GROUP BY prof_lname, prof_fname`,
+                [
+                    last.charAt(0).toUpperCase() + last.slice(1).toLowerCase(), 
+                    first.charAt(0).toUpperCase() + first.slice(1).toLowerCase() 
+                ]);  // Use parameterized query
+            
+            res.json(result.rows)
+        }
+        else{
+            throw new Error("Proper Params not given");
+        }
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({error: 'Failed to fetch professors'});
+    }
+}
+
 //controller to get all professors optional params: course_num, course_prefix
 const getProfessors = async(req,res)=> {
     const courseNum = req.query.num;
@@ -70,6 +99,7 @@ const getGradeData = async(req,res)=>{
 };
 module.exports = {
     getPrefixes,
+    getProfessorGradeData,
     getProfessors,
     getCourseNumbers,
     getGradeData,
