@@ -4,7 +4,12 @@ const {query} = require('../config/db');
 const getPrefixes = async(req,res) => {
     try {
         const result = await query('SELECT DISTINCT course_prefix FROM course_grades');
-        res.json(result.rows.map(row=>row.course_prefix));
+        const prefixes = result.rows.map( (row) => (
+            {
+                prefix: row.course_prefix
+            }
+        ));
+        res.status(200).json(prefixes);
     } catch(err) {
         console.error(err);
         res.status(500).json({error: 'Failed to fetch courses'});
@@ -25,8 +30,8 @@ const getProfessorGradeData = async(req,res) => {
                 WHERE prof_lname=$1 AND prof_fname=$2
                 GROUP BY prof_lname, prof_fname`,
                 [
-                    last.charAt(0).toUpperCase() + last.slice(1).toLowerCase(), 
-                    first.charAt(0).toUpperCase() + first.slice(1).toLowerCase() 
+                    last,
+                    first
                 ]);  // Use parameterized query
             
             res.json(result.rows)
@@ -45,19 +50,27 @@ const getProfessors = async(req,res)=> {
     const courseNum = req.query.num;
     const coursePrefix = req.query.prefix;
     try{
+        let result; 
         //get professors for course w/ PREFIX-NUM
         if (courseNum && coursePrefix) {
-            const result = await query(`SELECT DISTINCT prof_lname, prof_fname 
+            result = await query(`SELECT DISTINCT prof_lname, prof_fname 
                                         FROM course_grades 
                                         WHERE course_num=$1 AND course_prefix=$2`,
                                         [courseNum, coursePrefix.toUpperCase()]);  // Use parameterized query
-            res.json(result.rows.map(row => { return row.prof_lname + ", " + row.prof_fname; }));
         }
         //get all professors
         else{
-            const result = await query('SELECT DISTINCT prof_lname, prof_fname FROM course_grades');
-            res.json(result.rows.map(row => { return row.prof_lname + ", " + row.prof_fname; }));
+            result = await query('SELECT DISTINCT prof_lname, prof_fname FROM course_grades');
         }
+
+        const professors = result.rows.map((row) => (
+            {
+            name: `${row.prof_lname}, ${row.prof_fname}`
+            }
+        ));
+
+        res.status(200).json(professors);
+
     } catch(err) {
         console.error(err);
         res.status(500).json({error: 'Failed to fetch professors'});
@@ -70,7 +83,8 @@ const getCourseNumbers = async(req, res)=>{
     
     try{
         const result = await query(`SELECT DISTINCT course_num FROM course_grades WHERE course_prefix = '${prefix.toUpperCase()}'`)
-        res.json(result.rows.map(row=>row.course_num));
+        res.status(200).json(result.rows);
+        
     } catch(err) {
         res.status(500).json({err: 'Error fetching course numbers'});
     }
