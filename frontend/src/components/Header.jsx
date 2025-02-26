@@ -10,7 +10,7 @@ const Header = () => {
                 <Link
                     to="/"
                     className="text-xl font-bold"
-                    style={{ color: '#CFC493' }}
+                    style={{ color: 'white' }}
                 >
                     Grade-A-Bull
                     <br />

@@ -107,7 +107,7 @@ const Graph = ({props}) => {
             <>
             <br/>
             <div className="w-full max-w-full overflow-x-hidden">
-                <div className="w-full h-[500px] sm:h-[400px] md:h-[500px] lg:h-[600px] xl:h-[700px]">
+                <div className="w-full h-[500px] sm:h-[400px] md:h-[500px] lg:h-[600px] xl:h-7500px]">
                     {data && <Plot 
                         data={data.data} 
                         layout={{
