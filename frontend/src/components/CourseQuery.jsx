@@ -2,11 +2,12 @@ import React, {useState, useEffect} from "react";
 import {fetchPrefixes, fetchNums} from '../api/courseApi';
 import { fetchCourseGrades } from "../api/gradeData";
 import Graph from "./Graph";
+import Select from 'react-select';
 
 const CourseQuery = () => {
 
-    const [prefixes, setPrefixes] = useState([]);
-    const [nums, setNums] = useState([]);
+    const [prefixOptions, setPrefixOptions] = useState({});
+    const [numOptions, setNumOptions] = useState({});
     const [selectedPrefix, setSelectedPrefix] = useState('');
     const [selectedNum, setSelectedNum] = useState('');
     const [gradeData, setGradeData] = useState(null);
@@ -16,14 +17,16 @@ const CourseQuery = () => {
         const getPrefixes = async () => {
             const prefixes = await fetchPrefixes();
             const prefixList = prefixes.map(row => row.prefix);
-            setPrefixes(prefixList);
+            const sortedData = prefixList.sort((a, b) => a.localeCompare(b));
+            setPrefixOptions(sortedData.map(prefix => ({value: prefix, label: prefix})));
         };
 
         //fetch nums from backend
         const getNums = async (selectedPrefix) => {
             const nums = await fetchNums(selectedPrefix);
             const numList = nums.map(row => row.course_num);
-            setNums(numList);
+            const sortedData = numList.sort((a, b) => a>b);
+            setNumOptions(sortedData.map(num => ({value: num, label: num})));
         };
 
         getPrefixes();
@@ -40,50 +43,66 @@ const CourseQuery = () => {
     }, [selectedPrefix, selectedNum]);
 
     const handleChangePrefix = (e) => {
-        const course_prefix = e.target.value;
+        const course_prefix = e.value;
         if(!course_prefix) return;
         setSelectedPrefix(course_prefix);
+        setSelectedNum('');
     };
 
     const handleChangeNum = (e) => {
-        const course_num = e.target.value;
+        const course_num = e.value;
         if(!course_num) return;
         setSelectedNum(course_num);
     };
 
     return (
         <div className="form-container">
-            <h2>Course Query</h2>
             <form>
                 <label>
-                    Select Course Prefix:
-                    <select
-                    value = {selectedPrefix}
-                    onChange= {handleChangePrefix} >
-                        <option value="">Select A Course Prefix</option>
-                        {prefixes.map((prefix) => (
-                            <option key={prefix} value={prefix}>
-                                {prefix}
-                            </option>
-                        ))}
-                    </select>
+                    <Select
+                            value={selectedPrefix ? { value: selectedPrefix, label: selectedPrefix } : null}
+                            onChange={handleChangePrefix}
+                            options={prefixOptions}
+                            isClearable={false}
+                            isSearchable={true}
+                            onFocus={()=>{setSelectedPrefix('')}}
+                            placeholder="Enter Course Prefix"
+                            className="basic-single"
+                            classNamePrefix="select text-white bg-gray-800"
+                            styles={{
+                                option: (provided) => ({
+                                    ...provided,
+                                    color: '#000000'
+                                }),
+                                singleValue: (provided) => ({
+                                    ...provided,
+                                    color: '#000000'
+                                })
+                            }}
+                    />
                 </label>
                 <br/>
-                {selectedPrefix && (
-                    <label>
-                        Select A Course Number:
-                        <select 
-                        value = {selectedNum}
-                        onChange={handleChangeNum}>
-                            <option value = "">Select A Course Number</option>
-                            {nums.map((num) => (
-                                <option key={num} value={num}>
-                                    {num}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
-                )}
+                {selectedPrefix && <Select
+                        value={selectedNum ? { value: selectedNum, label: selectedNum } : null}
+                        onChange={handleChangeNum}
+                        options={numOptions}
+                        isClearable={false}
+                        isSearchable={true}
+                        onFocus={()=>{setSelectedNum('')}}
+                        placeholder="Enter Course Number"
+                        className="basic-single"
+                        classNamePrefix="select text-white bg-gray-800"
+                        styles={{
+                            option: (provided) => ({
+                                ...provided,
+                                color: '#000000'
+                            }),
+                            singleValue: (provided) => ({
+                                ...provided,
+                                color: '#000000'
+                            })
+                        }}
+                    />}
             </form>
 
             {selectedPrefix && selectedNum && <Graph props={{ 

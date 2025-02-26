@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const courseRoutes = require('./routes/courseRoutes');
+const summaryRoutes = require('./routes/summaryRoutes');
 const pool = require('./config/db');
 const cors = require('cors');
 
@@ -20,6 +21,7 @@ app.use(cors({
 
 //routes
 app.use('/api',courseRoutes)
+app.use('/api',summaryRoutes)
 
 //start server
 const port = process.env.PORT || 3000;

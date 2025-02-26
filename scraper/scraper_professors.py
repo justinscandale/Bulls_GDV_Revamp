@@ -1,7 +1,10 @@
 from bs4 import BeautifulSoup
 from pandas import DataFrame
 import requests 
-from utils import PROF_URL
+
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 
 # Parses the professor / course info page
@@ -16,7 +19,7 @@ Course_Name, Prof_last_name, Prof_first_name
 -> Tuple
 '''
     #Create full link to scrape
-    full_link = PROF_URL + "/" + link
+    full_link = os.getenv("PROF_URL") + "/" + link
 
     try:
         #Make request & Check if succesful

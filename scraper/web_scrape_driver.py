@@ -1,9 +1,12 @@
 from scraper_grade_distributions import parse_grade_dist_page
 from utils import _COURSE_PREFIXES, file_exists
-from env import password, email
-import random
 
-###
+# Load env variables
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+# Import necessary libraries from selenium / webdriver
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
@@ -21,19 +24,19 @@ service = Service(ChromeDriverManager().install())
 driver = webdriver.Chrome(service=service)
 
 # Step 1: Open Google
-driver.get("https://usfweb.usf.edu/dss/infocenter/?silverheader=9&report_category=ADM&report_type=SGDIS")
+driver.get(os.getenv("SCRAPE_URL"))
 
-#stall driver until loaded & input email
+# Stall driver until loaded & input email
 WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "i0116")))
 email_input = driver.find_element(By.ID, "i0116")
-email_input.send_keys(email)
+email_input.send_keys(os.getenv("EMAIL"))
 submit_button = driver.find_element(By.ID, "idSIButton9")
 submit_button.click()
 
 #stall driver until loaded & input password
 WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "i0118")))
 password_input = driver.find_element(By.ID, "i0118")
-password_input.send_keys(password)
+password_input.send_keys(os.getenv("PASSWORD"))
 time.sleep(2)
 submit_button = driver.find_element(By.ID, "idSIButton9")
 submit_button.click()
@@ -48,9 +51,9 @@ for prefix in _COURSE_PREFIXES:
         continue
 
     #make sure on right page
-    driver.get("https://usfweb.usf.edu/dss/infocenter/?silverheader=9&report_category=ADM&report_type=SGDIS")
+    driver.get(os.getenv("SCRAPE_URL"))
 
-    time.sleep(random.randint(15,30))
+    time.sleep(2)
 
     #Find dropdown
     dropdown = driver.find_element(By.ID, "ctl00_ContentPlaceHolder1_MainContentPanel1_paramentry1_dd_termid")
@@ -63,7 +66,7 @@ for prefix in _COURSE_PREFIXES:
     input_course_prefix = driver.find_element(By.ID,"ctl00_ContentPlaceHolder1_MainContentPanel1_paramentry1_txt_crspre")
     input_course_prefix.send_keys(prefix)
 
-    time.sleep(random.randint(10,20))
+    time.sleep(2)
 
     #find submut button
     submit_button = driver.find_element(By.ID, "ctl00_ContentPlaceHolder1_MainContentPanel1_paramentry1_btn_submit")
@@ -72,14 +75,13 @@ for prefix in _COURSE_PREFIXES:
     WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.ID, "ctl00_ContentPlaceHolder1_MainContentPanel1_pnl_reportpanel")))
 
     #Wait to ensure all dyncamic content loaded
-    time.sleep(random.randint(10,20))
+    time.sleep(3)
 
     html_source = driver.page_source
     with open(f"html_clone/fall24/{prefix}.html", "w", encoding="utf-8") as file:
         file.write(html_source)
 
     print(f"Succesfully scraped {prefix}")
-    time.sleep(random.randint(40,80))
 
 
 driver.quit()

@@ -2,10 +2,6 @@ import csv
 import pandas as pd
 import os
 
-# Base URLs for scraping
-GRADE_DIST_URL = "https://usfweb.usf.edu/dss/infocenter/?silverheader=&report_category=ADM&report_type=SGDIS&reportid=728576"
-PROF_URL = "https://usfweb.usf.edu/dss/infocenter"
-
 # Course Prefixes
 _COURSE_PREFIXES = [
     "ADE", "ADV", "AFA", "AFH", "AFR", "AMH", "AML", "AMS", "ANG", "ANS", "ANT", "APK", 
@@ -50,7 +46,8 @@ _course_data =   {
 "Total_Grades": None,
 "Course_Name": None, 
 "Prof_Lname": None, 
-"Prof_Fname": None 
+"Prof_Fname": None,
+"Term": None,
 }
 
 #Check if a file exists

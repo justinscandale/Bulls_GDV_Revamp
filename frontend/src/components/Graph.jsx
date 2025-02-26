@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import Plot from 'react-plotly.js';
 import {fetchCourseGrades, fetchProfData, transformDataForProfGraph, transformDataForCourseGraph} from '../api/gradeData';
+import SummaryAI from './SummaryAI';
 
 const Graph = ({props}) => {
     const [data, setData] = useState([]);
@@ -38,7 +39,15 @@ const Graph = ({props}) => {
                                 text:'Count'
                             }
                         },
-                        hoverMode: 'closest'
+                        hoverMode: 'closest',
+                        margin: { 
+                            l: 50,
+                            r: 50,
+                            b: 50,
+                            t: 50,
+                            pad: 0
+                            },
+                            autosize: true,
                     },
                     config: {
                         displayModeBar: false,
@@ -95,10 +104,43 @@ const Graph = ({props}) => {
 
         //render graph 
         return (
-            <div>
-                {data && <Plot data={data.data} layout={data.layout} config={data.config} />}
+            <>
+            <br/>
+            <div className="w-full max-w-full overflow-x-hidden">
+                <div className="w-full h-[500px] sm:h-[400px] md:h-[500px] lg:h-[600px] xl:h-[700px]">
+                    {data && <Plot 
+                        data={data.data} 
+                        layout={{
+                            ...data.layout,
+                            autosize: true,
+                            margin: {
+                                l: 40,
+                                r: 40,
+                                t: 40,
+                                b: 40,
+                                pad: 0
+                            },
+                            font: {
+                                size: 10
+                            }
+                        }}
+                        config={{
+                            displayModeBar: false,
+                            responsive: true,
+                            displaylogo: false,
+                            scrollZoom: false
+                        }}
+                        className="w-full h-full"
+                        useResizeHandler={true}
+                        style={{width: '100%', height: '100%'}}
+                    />}
+                </div>
+                <div className="mt-4">
+                    <SummaryAI props={data.data}/>
+                </div>
             </div>
-            );
+            </>
+        );
     };
 
 

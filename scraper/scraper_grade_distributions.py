@@ -2,10 +2,11 @@ from bs4 import BeautifulSoup
 from pandas import DataFrame
 import requests 
 import scraper_professors
-from utils import _course_data
+from utils import _course_data, _COURSE_PREFIXES, save_to_csv
+import os
 
 # Parses the grade distribution page
-def parse_grade_dist_page(link):
+def parse_grade_dist_page(file, term):
     '''
 Parameters:
 Full link for page with grade dist data
@@ -19,11 +20,11 @@ Pandas Datafram
     '''
     try:
         #Make request & Check if succesful
-        response = requests.get(link)
-        response.raise_for_status() #Raises HTTP error for bad responses
+        with open(file, 'r') as file:
+            html_content = file.read()
 
         #Parse page with beautifulsoup
-        soup = BeautifulSoup(response.content, 'html.parser')
+        soup = BeautifulSoup(html_content, 'html.parser')
 
         #Dataframe to store scraped data
         #df = DataFrame()
@@ -60,6 +61,7 @@ Pandas Datafram
                             else:
                                 course_href = col.find('a',href=True).get('href')
                                 course_name, prof_last_name, prof_first_name = scraper_professors.parse_professor_page(course_href)
+                                print(course_href)
                                 course_data['Course_Name'] = course_name
                                 course_data['Prof_Fname'] = prof_first_name
                                 course_data['Prof_Lname'] = prof_last_name
@@ -67,7 +69,8 @@ Pandas Datafram
                                 course_data["Course_Prefix"] = course_info[0][0:3]
                                 course_data["Course_Num"] = course_info[0][4:8]
                                 course_data["Instruction_Type"] = course_info[1][-1]
-                                course_data["CRN"] = course_info[2][1:6]
+                                course_data["CRN"] = course_info[2][1:6]  
+                                course_data["Term"] = term
 
                         case 1:
                             course_data["A_Num"] = col.get_text()
@@ -102,11 +105,24 @@ Pandas Datafram
        
     except requests.exceptions.RequestException as e:
         print(f"Request error: {e}")
-        return []
+        return DataFrame([])
 
     except Exception as e:
         print(f"ERROR ON PRASE_GRADE_DIST: {e}")
-        return []
+        return DataFrame([])
 
-if __name__ == "main":
-    print(parse_grade_dist_page("http://localhost:8000/fall24/cop.html"))
+if __name__ == "__main__":
+
+    #Iterate through all files in html_clone folder
+    for file in os.listdir("./html_clone/fall24"):
+
+        try:
+            print("Parsing file  " + file)
+            file = "html_clone/fall24/" + file
+            output = parse_grade_dist_page(file, "202408")
+            save_to_csv(output, "F24.csv")
+            
+        except:
+            print("ERROR ON PARSE_GRADE_DIST")
+            continue
+        

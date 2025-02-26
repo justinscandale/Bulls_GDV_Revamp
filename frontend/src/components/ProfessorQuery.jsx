@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from "react";
 import Graph from "./Graph";
+import Select from 'react-select';
 
 const ProfessorQuery = () => {
 
@@ -12,7 +13,8 @@ const ProfessorQuery = () => {
             try{
                 const response = await fetch('http://localhost:5000/api/professors')
                 const data = await response.json();
-                setProfessors(data);
+                const sortedData = data.sort((a, b) => a.name.localeCompare(b.name));
+                setProfessors(sortedData.map(prof => ({value: prof.name, label: prof.name})));
             }
             catch(error){
                 console.error('Error fetching professors:', error);
@@ -23,7 +25,7 @@ const ProfessorQuery = () => {
     }, []);
 
     const handleChange = (e) => {
-        const name = e.target.value;
+        const name = e.value;
         if(!name) return;
         setSelectedProfessor(name);
 
@@ -34,21 +36,28 @@ const ProfessorQuery = () => {
 
     return (
         <div className="form-container">
-            <h2>Professor Query</h2>
             <form>
-                <label>
-                    Select Professor:
-                    <select
-                    value={selectedProfessor}
-                    onChange={handleChange}>
-                    <option value="">Select a professor</option>
-                    {professors.map((professor) => (
-                        <option key={professor.name} value={professor.name}>
-                            {professor.name}
-                        </option>
-                    ))}
-                    </select>
-                </label>
+            <Select
+                value={selectedProfessor ? { value: selectedProfessor, label: selectedProfessor } : null}
+                onChange={handleChange}
+                options={professors}
+                isClearable={false}
+                isSearchable={true}
+                placeholder="Enter Professor Name (Last, First)"
+                className="basic-single"
+                classNamePrefix="select text-white bg-gray-800"
+                menuPortalTarget={document.body}
+                styles={{
+                    option: (provided) => ({
+                        ...provided,
+                        color: '#000000'
+                    }),
+                    singleValue: (provided) => ({
+                        ...provided,
+                        color: '#000000'
+                    })
+                }}
+                    />
             </form>
 
             {selectedProfessor && <Graph props={profObject}/>}
