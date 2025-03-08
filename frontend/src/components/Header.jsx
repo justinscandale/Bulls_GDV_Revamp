@@ -1,54 +1,104 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
-const Header = () => {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+function Header() {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
 
-    return (
-        <header className="bg-gray-700 p-4 fixed top-0 left-0 w-full shadow-md z-10">
-            <div className="container mx-auto flex flex-wrap justify-between items-center">
-                <Link
-                    to="/"
-                    className="text-xl font-bold"
-                    style={{ color: 'white' }}
-                >
-                    Grade-A-Bull
-                    <br />
-                    <span className="text-xs">By Justin Scandale</span>
-                </Link>
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
-                {/* Hamburger Menu Button */}
-                <button 
-                    className="md:hidden p-2"
-                    onClick={() => setIsMenuOpen(!isMenuOpen)}
-                >
-                    <svg className="w-6 h-6" fill="#CFC493" viewBox="0 0 24 24">
-                        <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
-                    </svg>
-                </button>
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location]);
 
-                {/* Navigation Links */}
-                <nav className={`${isMenuOpen ? 'block' : 'hidden'} md:block w-full md:w-auto mt-4 md:mt-0`}>
-                    <div className="flex flex-col md:flex-row md:space-x-6 space-y-4 md:space-y-0">
-                        <Link
-                            to="/grade-distribution"
-                            className="bg-[#006747] text-center text-white py-2 px-6 rounded-xl hover:bg-green-900 transition-all"
-                            style={{ color: '#CFC493' }}
-                        >
-                            Grade Distribution
-                        </Link>
-                        <Link
-                            to="/course-registration"
-                            className="bg-[#006747] text-center text-white py-2 px-6 rounded-xl hover:bg-green-900 transition-all"
-                            style={{ color: '#CFC493' }}
-                        >
-                            Course Registration
-                        </Link>
-                    </div>
-                </nav>
+  const navLinks = [
+    { path: '/', label: 'Home' },
+    { path: '/grade-distribution', label: 'Grade Distribution' },
+    { path: '/course-registration', label: 'Course Registration' },
+  ];
+
+  return (
+    <header 
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-gray-900 ${
+        isScrolled ? 'shadow-lg border-b border-gray-800' : ''
+      }`}
+    >
+      <nav className="w-full">
+        <div className="h-16 max-w-[2000px] mx-auto px-6 flex items-center justify-between">
+          <Link to="/" className="flex items-center space-x-3">
+            <span className="text-2xl">📊</span>
+            <span className="font-bold text-xl text-green-500">
+              Grade-A-Bull
+            </span>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            {navLinks.map(({ path, label }) => (
+              <Link
+                key={path}
+                to={path}
+                className={`text-sm font-medium transition-all duration-200 ${
+                  location.pathname === path
+                    ? 'text-green-500 scale-105'
+                    : 'text-gray-100 hover:text-green-400 hover:scale-105'
+                }`}
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden z-50 p-2 text-gray-100 hover:text-white focus:outline-none"
+          >
+            <div className="w-6 h-5 relative flex flex-col justify-between">
+              <span className={`w-full h-0.5 bg-current transform transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
+              <span className={`w-full h-0.5 bg-current transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`} />
+              <span className={`w-full h-0.5 bg-current transform transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
             </div>
-        </header>
-    );
-};
+          </button>
+        </div>
+
+        {/* Mobile Menu */}
+        <div 
+          className={`fixed inset-0 bg-gray-900 transition-all duration-300 md:hidden ${
+            isMobileMenuOpen 
+              ? 'opacity-100 pointer-events-auto' 
+              : 'opacity-0 pointer-events-none'
+          }`}
+        >
+          <div className="flex items-center justify-center h-full">
+            <div className="flex flex-col items-center space-y-8">
+              {navLinks.map(({ path, label }) => (
+                <Link
+                  key={path}
+                  to={path}
+                  className={`text-xl font-medium transition-all duration-200 ${
+                    location.pathname === path
+                      ? 'text-green-500 scale-105'
+                      : 'text-gray-100 hover:text-green-400 hover:scale-105'
+                  }`}
+                >
+                  {label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+  );
+}
 
 export default Header;

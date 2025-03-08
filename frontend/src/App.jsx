@@ -10,22 +10,16 @@ import Footer from './components/Footer';
 function App() {
   return (
     <Router>
-      {/* Root container with flex column layout and full screen height */}
-      <div className="flex flex-col">
-        
-        {/* Header */}
+      <div className="absolute inset-0 min-h-screen w-full flex flex-col bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 overflow-x-hidden">
         <Header />
-        {/* Main content area, set to grow and fill remaining space */}
-        <main className="mt-16 flex-grow max-h-screen">
+        <main className="flex-1 w-full mt-16">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/grade-distribution" element={<GradeDistribution />} />
             <Route path="/course-registration" element={<CourseRegistration />} />
           </Routes>
         </main>
-        
-        {/* Footer
-        <Footer />  */}
+        <Footer />
       </div>
     </Router>
   );
