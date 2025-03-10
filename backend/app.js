@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const courseRoutes = require('./routes/courseRoutes');
 const summaryRoutes = require('./routes/summaryRoutes');
+const seatRoutes = require('./routes/seatRoutes');
 const pool = require('./config/db');
 const cors = require('cors');
 
@@ -20,6 +21,7 @@ app.use(cors({
 }));
 
 //routes
+app.use('/api/seats', seatRoutes)
 app.use('/api',courseRoutes)
 app.use('/api',summaryRoutes)
 

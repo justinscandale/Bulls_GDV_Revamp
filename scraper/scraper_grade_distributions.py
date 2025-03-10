@@ -114,13 +114,13 @@ Pandas Datafram
 if __name__ == "__main__":
 
     #Iterate through all files in html_clone folder
-    for file in os.listdir("./html_clone/fall24"):
+    for file in os.listdir("./html_clone/summer24"):
 
         try:
             print("Parsing file  " + file)
-            file = "html_clone/fall24/" + file
-            output = parse_grade_dist_page(file, "202408")
-            save_to_csv(output, "F24.csv")
+            file = "html_clone/summer24/" + file
+            output = parse_grade_dist_page(file, "202405")
+            save_to_csv(output, "Su24.csv")
             
         except:
             print("ERROR ON PARSE_GRADE_DIST")

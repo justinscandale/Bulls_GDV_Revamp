@@ -47,7 +47,7 @@ input("Press enter when ready")
 for prefix in _COURSE_PREFIXES:
 
     #Skip the prefix if already has been scraped
-    if file_exists(f"html_clone/fall24/{prefix}.html"):
+    if file_exists(f"html_clone/summer24/{prefix}.html"):
         continue
 
     #make sure on right page
@@ -60,7 +60,7 @@ for prefix in _COURSE_PREFIXES:
     #Sleect drop down
     select = Select(dropdown)
     #Select option
-    select.select_by_visible_text("Fall 2024") #Change this depending on what term to search
+    select.select_by_visible_text("Summer 2024") #Change this depending on what term to search
 
     #Find course prefix area
     input_course_prefix = driver.find_element(By.ID,"ctl00_ContentPlaceHolder1_MainContentPanel1_paramentry1_txt_crspre")
@@ -78,7 +78,7 @@ for prefix in _COURSE_PREFIXES:
     time.sleep(3)
 
     html_source = driver.page_source
-    with open(f"html_clone/fall24/{prefix}.html", "w", encoding="utf-8") as file:
+    with open(f"html_clone/summer24/{prefix}.html", "w", encoding="utf-8") as file:
         file.write(html_source)
 
     print(f"Succesfully scraped {prefix}")

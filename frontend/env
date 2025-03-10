@@ -1,9 +1,0 @@
-DB_USER=justinscandale
-DB_HOST=localhost
-DB_NAME=justinscandale
-DB_PASSWORD=your_password
-DB_PORT=5432
-
-PORT=5000
-
-GEMINI_API_KEY = AIzaSyCBpgd8ac146eMA9-wDz6_FP2VreymAWCw

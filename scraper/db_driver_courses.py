@@ -12,13 +12,12 @@ port = '5432'  # Default PostgreSQL port
 engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{dbname}')
 
 # Path to your CSV file
-csv_file_path = 'data/ENG_DATA/F20_ENG.csv'
-df = pd.read_csv("data/F24.csv")
+df = pd.read_csv("data/Su24.csv")
 
 df.to_sql(
     name='course_grades',
     con=engine,
-    if_exists='replace',
+    if_exists='append',
     index=False
 )
 
