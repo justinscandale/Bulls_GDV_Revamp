@@ -1,4 +1,5 @@
 import React from "react";
+import SeatQuery from "../components/SeatQuery";
 
 function CourseRegistration() {
   return (
@@ -9,6 +10,7 @@ function CourseRegistration() {
           <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent">
             Course Registration
           </h1>
+          <SeatQuery /> {/* Seat Query Component */}
           <p className="text-xl text-gray-300">
             Track course availability and registration trends in real-time
           </p>
