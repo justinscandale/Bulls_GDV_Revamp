@@ -53,7 +53,7 @@ function Home() {
               <div className="text-green-500 mb-4 text-4xl">📈</div>
               <h3 className="text-xl font-bold mb-4 text-green-400">Course Analytics</h3>
               <p className="text-gray-400">
-                Compare grade distributions across different sections and semesters to optimize your academic journey.
+                Compare grade distributions across different sections and professors to optimize your academic journey.
               </p>
             </div>
 

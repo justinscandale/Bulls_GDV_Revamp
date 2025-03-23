@@ -102,11 +102,29 @@ const SeatQuery = () => {
                         }}
                     />}
             </form>
-            <div className="seat-data">
+            <div className="seat-data flex flex-wrap gap-4 mt-6 justify-center">
                 {seatData.map(seat => (
-                    <div key={seat.course_crn}>
-                        <h3>{seat.course_title}</h3>
-                        <p>{seat.seats_available}</p>
+                    <div className= {`${seat.seats_available == 0 ? 'bg-red-900' : 'bg-green-900'} 
+                    text-white p-4 rounded-lg shadow-md w-full md:w-5/11`}
+                    key={seat.course_crn}>
+
+            <div className="flex justify-center items-center mb-4">
+                <h3 className="text-xl font-bold text-center flex-grow">
+                    {seat.course_prefix} {seat.course_number} - {seat.course_section} 
+                    <br /> 
+                    {seat.course_title}
+                    <br/>
+                    CRN: {seat.course_crn}
+                    <br/>
+                    Seats Open: {seat.seats_available}
+                </h3>
+                
+                <input 
+                    type="checkbox" 
+                    className="ml-4 w-6 h-6"
+                    onChange ={(e)=>{alert(`${e.target.checked ? 'Added to cart' : 'Removed from cart'}`)}}
+                />
+            </div>
                     </div>
                 ))}
             </div>

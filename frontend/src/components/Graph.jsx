@@ -135,9 +135,9 @@ const Graph = ({props}) => {
                         style={{width: '100%', height: '100%'}}
                     />}
                 </div>
-                <div className="mt-4">
+                {/* <div className="mt-4">
                     <SummaryAI props={data.data}/>
-                </div>
+                </div> */}
             </div>
             </>
         );
