@@ -6,21 +6,22 @@ function Home() {
     <div className="w-full">
       {/* Stats Bar */}
       <div className="w-full bg-gray-800/30 border-b border-gray-700/50">
-        <div className="max-w-[2000px] mx-auto px-6 py-4 flex justify-center space-x-16">
-          <div className="text-center">
-            <span className="block text-3xl font-bold text-green-500">10,873</span>
-            <span className="text-gray-400">Courses Tracked</span>
-          </div>
-          <div className="text-center">
-            <span className="block text-3xl font-bold text-green-500">2,931</span>
-            <span className="text-gray-400">Professors Analyzed</span>
-          </div>
-          <div className="text-center">
-            <span className="block text-3xl font-bold text-green-500">383,062</span>
-            <span className="text-gray-400">Grade Entries</span>
-          </div>
-        </div>
-      </div>
+  <div className="max-w-screen-lg mx-auto px-6 py-4 flex flex-wrap justify-center items-center space-y-8 sm:space-y-0 sm:space-x-16">
+    <div className="text-center w-full sm:w-auto">
+      <span className="block text-3xl font-bold text-green-500">10,873</span>
+      <span className="text-gray-400">Courses Tracked</span>
+    </div>
+    <div className="text-center w-full sm:w-auto">
+      <span className="block text-3xl font-bold text-green-500">2,931</span>
+      <span className="text-gray-400">Professors Analyzed</span>
+    </div>
+    <div className="text-center w-full sm:w-auto">
+      <span className="block text-3xl font-bold text-green-500">383,062</span>
+      <span className="text-gray-400">Grade Entries</span>
+    </div>
+  </div>
+</div>
+
 
       {/* Hero Section */}
       <div className="w-full py-24 px-6">

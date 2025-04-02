@@ -65,7 +65,7 @@ const CourseQuery = () => {
                             options={prefixOptions}
                             isClearable={false}
                             isSearchable={true}
-                            onFocus={()=>{setSelectedPrefix('')}}
+                            //onFocus={()=>{setSelectedPrefix('')}}
                             placeholder="Enter Course Prefix"
                             className="basic-single"
                             classNamePrefix="select text-white bg-gray-800"
@@ -88,7 +88,7 @@ const CourseQuery = () => {
                         options={numOptions}
                         isClearable={false}
                         isSearchable={true}
-                        onFocus={()=>{setSelectedNum('')}}
+                        //onFocus={()=>{setSelectedNum('')}}
                         placeholder="Enter Course Number"
                         className="basic-single"
                         classNamePrefix="select text-white bg-gray-800"

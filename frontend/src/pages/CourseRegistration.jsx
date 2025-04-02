@@ -33,7 +33,7 @@ function CourseRegistration() {
             </h2>
 
             <p className="text-gray-400 max-w-2xl mx-auto mb-8">
-              We're working hard to bring you real-time course registration tracking. 
+              I'm currently working hard to bring you real-time course registration tracking. 
               Soon you'll be able to monitor seat availability, waitlist status, and 
               receive notifications when spots open up in your desired courses.
             </p>
