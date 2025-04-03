@@ -12,7 +12,18 @@ port = '5432'  # Default PostgreSQL port
 engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{dbname}')
 
 # Path to your CSV file
-df = pd.read_csv("data/Su24.csv")
+df = pd.read_csv("data/Missed_Fall24.csv")
+
+# Define the columns that should be in the table according to the DDL
+valid_columns = [
+    'course_prefix', 'course_num', 'instruction_type', 'crn',
+    'a_num', 'b_num', 'c_num', 'd_num', 'f_num', 'i_num', 's_num', 'u_num', 'e_num', 'o_num',
+    'total_grades', 'course_name', 'prof_lname', 'prof_fname', 'course_term'
+]
+
+# Drop columns that aren't in the DDL schema
+columns_to_keep = [col for col in df.columns if col.lower() in valid_columns]
+df = df[columns_to_keep]
 
 df.to_sql(
     name='course_grades',

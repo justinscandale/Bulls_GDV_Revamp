@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 from pandas import DataFrame
 import requests 
 import scraper_professors
-from utils import _course_data, _COURSE_PREFIXES, save_to_csv
+from utils import _course_data, _MISSED_PREFIXES,_COURSE_PREFIXES, save_to_csv
 import os
 
 # Parses the grade distribution page
@@ -62,38 +62,38 @@ Pandas Datafram
                                 course_href = col.find('a',href=True).get('href')
                                 course_name, prof_last_name, prof_first_name = scraper_professors.parse_professor_page(course_href)
                                 print(course_href)
-                                course_data['Course_Name'] = course_name
-                                course_data['Prof_Fname'] = prof_first_name
-                                course_data['Prof_Lname'] = prof_last_name
+                                course_data['course_name'] = course_name
+                                course_data['prof_fname'] = prof_first_name
+                                course_data['prof_lname'] = prof_last_name
 
-                                course_data["Course_Prefix"] = course_info[0][0:3]
-                                course_data["Course_Num"] = course_info[0][4:8]
-                                course_data["Instruction_Type"] = course_info[1][-1]
-                                course_data["CRN"] = course_info[2][1:6]  
-                                course_data["Term"] = term
+                                course_data["course_prefix"] = course_info[0][0:3]
+                                course_data["course_num"] = course_info[0][4:8]
+                                course_data["instruction_type"] = course_info[1][-1]
+                                course_data["crn"] = course_info[2][1:6]  
+                                course_data["term"] = term
 
                         case 1:
-                            course_data["A_Num"] = col.get_text()
+                            course_data["a_num"] = col.get_text()
                         case 3:
-                            course_data["B_Num"] = col.get_text()
+                            course_data["b_num"] = col.get_text()
                         case 5:
-                            course_data["C_Num"] = col.get_text()
+                            course_data["c_num"] = col.get_text()
                         case 7:
-                            course_data["D_Num"] = col.get_text()
+                            course_data["d_num"] = col.get_text()
                         case 9:
-                            course_data["F_Num"] = col.get_text()
+                            course_data["f_num"] = col.get_text()
                         case 11:
-                            course_data["I_Num"] = col.get_text()
+                            course_data["i_num"] = col.get_text()
                         case 13:
-                            course_data["S_Num"] = col.get_text()
+                            course_data["s_num"] = col.get_text()
                         case 15:
-                            course_data["U_Num"] = col.get_text()
+                            course_data["u_num"] = col.get_text()
                         case 17:
-                            course_data["W_Num"] = col.get_text()
+                            course_data["w_num"] = col.get_text()
                         case 19:
-                            course_data["O_Num"] = col.get_text()
+                            course_data["o_num"] = col.get_text()
                         case 21:
-                            course_data["Total_Grades"] = col.get_text()
+                            course_data["total_grades"] = col.get_text()
                
                #TRANSLATE THIS IF TO AN ADD TO DF
                 if is_valid_row:        
@@ -114,15 +114,44 @@ Pandas Datafram
 if __name__ == "__main__":
 
     #Iterate through all files in html_clone folder
-    for file in os.listdir("./html_clone/summer24"):
+    for file in os.listdir("./html_clone/summer2024"):
 
         try:
             print("Parsing file  " + file)
-            file = "html_clone/summer24/" + file
+            file = "html_clone/summer2024/" + file
             output = parse_grade_dist_page(file, "202405")
-            save_to_csv(output, "Su24.csv")
+            save_to_csv(output, "Missed_Summer24.csv")
             
         except:
             print("ERROR ON PARSE_GRADE_DIST")
             continue
-        
+
+        #Iterate through all files in html_clone folder
+    for file in os.listdir("./html_clone/spring2024"):
+
+        try:
+            print("Parsing file  " + file)
+            file = "html_clone/spring2024/" + file
+            output = parse_grade_dist_page(file, "202401")
+            save_to_csv(output, "Missed_Spring24.csv")
+            
+        except:
+            print("ERROR ON PARSE_GRADE_DIST")
+            continue
+    
+     #Iterate through all files in html_clone folder
+    for file in os.listdir("./html_clone/fall24"):
+
+        try:
+            print("Parsing file  " + file)
+
+            if file.split(".")[0] not in _MISSED_PREFIXES:
+                continue
+
+            file = "html_clone/fall24/" + file
+            output = parse_grade_dist_page(file, "202408")
+            save_to_csv(output, "Missed_Fall24.csv")
+            
+        except:
+            print("ERROR ON PARSE_GRADE_DIST")
+            continue
