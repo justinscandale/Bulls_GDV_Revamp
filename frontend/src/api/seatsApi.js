@@ -1,6 +1,6 @@
 const fetchPrefixes = async () => {
     try{
-        const response = await fetch('http://localhost:5000/api/seats/prefixes');
+        const response = await fetch('/api/seats/prefixes');
         return response.json();
     }
     catch(error){
@@ -10,7 +10,7 @@ const fetchPrefixes = async () => {
 
 const fetchNums = async (prefix) => {
     try{
-        const response = await fetch(`http://localhost:5000/api/seats/numbers?prefix=${prefix}`);
+        const response = await fetch(`/api/seats/numbers?prefix=${prefix}`);
         return response.json();
     }
     catch(error){
@@ -20,7 +20,7 @@ const fetchNums = async (prefix) => {
 
 const fetchSeats = async (prefix, number) => {
     try{
-        const response = await fetch(`http://localhost:5000/api/seats/seats?prefix=${prefix}&number=${number}`);
+        const response = await fetch(`/api/seats/seats?prefix=${prefix}&number=${number}`);
         return response.json();
     }
     catch(error){

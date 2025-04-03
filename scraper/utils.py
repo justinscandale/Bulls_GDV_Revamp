@@ -2,6 +2,29 @@ import csv
 import pandas as pd
 import os
 
+_MISSED_PREFIXES = ["ACG",
+"AFS",
+"CBH",
+"CCE",
+"CTS",
+"DAE",
+"EBD",
+"EVT",
+"FAS",
+"FRT",
+"GET",
+"GRK",
+"IDC",
+"JPT",
+"MET",
+"MUM",
+"OSE",
+"PEL",
+"PEN",
+"REA",
+"RSD",
+"SUR"]
+
 # Course Prefixes
 _COURSE_PREFIXES = [
     "ADE", "ADV", "AFA", "AFH", "AFR", "AMH", "AML", "AMS", "ANG", "ANS", "ANT", "APK", 
@@ -24,8 +47,9 @@ _COURSE_PREFIXES = [
     "PUP", "PUR", "QMB", "RCS", "RED", "REE", "REL", "RLG", "RMI", "RTV", "RUS", "RUT", "SCE", 
     "SCM", "SDS", "SLS", "SMT", "SOP", "SOW", "SPA", "SPB", "SPC", "SPM", "SPN", "SPS", "SPW", 
     "SSE", "STA", "SYA", "SYD", "SYG", "SYO", "SYP", "TAX", "THE", "TPA", "TPP", "TSL", "TTE", 
-    "URP", "URS", "VIC", "WOH", "WST", "ZOO"
-]
+    "URP", "URS", "VIC", "WOH", "WST", "ZOO" "AFS", "ACG", "CBH", "CCE", "CTS", "DAE", "EBD", 
+    "EVT", "FAS", "FRT", "GET", "GRK", "IDC", "JPT", "MET", "MUM", "OSE", "PEL", "PEN", "REA", 
+    "RSD", "SUR" ]
 
 #Dict to store all data scraped
 _course_data =   {

@@ -11,7 +11,7 @@ const ProfessorQuery = () => {
     useEffect( () => {
         const fetchProfessors = async () => {
             try{
-                const response = await fetch('http://localhost:5000/api/professors')
+                const response = await fetch('/api/professors')
                 const data = await response.json();
                 const sortedData = data.sort((a, b) => a.name.localeCompare(b.name));
                 setProfessors(sortedData.map(prof => ({value: prof.name, label: prof.name})));

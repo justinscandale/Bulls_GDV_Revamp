@@ -1,6 +1,6 @@
 const fetchPrefixes = async () => {
     try{
-        const response = await fetch('http://localhost:5000/api/prefixes');
+        const response = await fetch('/api/prefixes');
         return response.json();
     }
     catch(error){
@@ -10,7 +10,7 @@ const fetchPrefixes = async () => {
 
 const fetchNums = async (prefix) => {
     try{
-        const response = await fetch(`http://localhost:5000/api/coursenums?prefix=${prefix}`);
+        const response = await fetch(`/api/coursenums?prefix=${prefix}`);
         return response.json();
     }
     catch(error){

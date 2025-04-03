@@ -1,6 +1,6 @@
 const fetchCourseGrades = async (coursePrefix, courseNum) => {
     try{
-    const response = await fetch(`http://localhost:5000/api/gradedata?num=${courseNum}&prefix=${coursePrefix}`);
+    const response = await fetch(`/api/gradedata?num=${courseNum}&prefix=${coursePrefix}`);
     return response.json();
     }
     catch(error){
@@ -10,7 +10,7 @@ const fetchCourseGrades = async (coursePrefix, courseNum) => {
 
 const fetchProfData = async (fname, lname) => {
     try{
-    const response = await fetch(`http://localhost:5000/api/profdata?fname=${fname}&lname=${lname}`);
+    const response = await fetch(`/api/profdata?fname=${fname}&lname=${lname}`);
     const data = await response.json();
     return data;
     } 
