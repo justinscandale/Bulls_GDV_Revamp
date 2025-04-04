@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+from sqlalchemy import create_engine
 
 # Define headers to avoid sending unnecessary identifying information
 headers = {
@@ -79,12 +80,12 @@ for i, row in enumerate(rows):
     
     # Add row to data list
     data.append({
-        "Title": title,
-        "Course_Prefix": prefix,
-        "Course_Number": number,
-        "Section": sec,
-        "CRN": crn,
-        "Seats_Available": seats_available
+        "course_title": title,
+        "Ccurse_prefix": prefix,
+        "course_number": number,
+        "course_section": sec,
+        "crn": crn,
+        "seats_available": seats_available
     })
 
 # Create DataFrame from data list
@@ -92,6 +93,25 @@ df = pd.DataFrame(data)
 
 # Export to CSV
 df.to_csv('data/seat_course_data.csv', index=False)
+
+'''
+CREATE TABLE course_seats (
+    course_title text,
+    course_prefix text,
+    course_number text,
+    course_section bigint,
+    course_crn bigint,
+    seats_available bigint
+);
+'''
+# PostgreSQL connection details
+host = 'localhost'
+dbname = 'justinscandale'
+user = 'justinscandale'
+password = 'your_password'
+port = '5432'  # Default PostgreSQL port
+engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{dbname}')
+df.to_sql('course_data', con=engine, if_exists='replace', index=False)
 
 print(f"Successfully exported {len(df)} courses to course_data.csv")
 # Count how many <tr> tags are in the table

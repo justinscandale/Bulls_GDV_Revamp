@@ -5,6 +5,8 @@ import Home from './pages/Home';
 import Header from './components/Header';
 import GradeDistribution from './pages/GradeDistribution';
 import CourseRegistration from './pages/CourseRegistration';
+import SignUp from './pages/SignUp';
+import Login from './pages/Login';
 import Footer from './components/Footer';
 
 function App() {
@@ -17,6 +19,8 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/grade-distribution" element={<GradeDistribution />} />
             <Route path="/course-registration" element={<CourseRegistration />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/login" element={<Login />} />
           </Routes>
         </main>
         <Footer />

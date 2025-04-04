@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import SeatQuery from "../components/SeatQuery";
+import SeatViewer from "../components/SavedSeats";
+import { Link, useLocation } from 'react-router-dom';
 
 function CourseRegistration() {
   
@@ -16,6 +18,30 @@ function CourseRegistration() {
           <p className="text-xl text-gray-300">
             Track course availability and registration trends in real-time
           </p>
+          <div className="flex flex-wrap items-center justify-center gap-10 py-3">
+             <Link
+                key={'/login'}
+                to={'/login'}
+                className={`text-sm font-medium transition-all duration-200 ${
+                  location.pathname === '/login'
+                    ? 'text-green-500 scale-105'
+                    : 'text-gray-100 hover:text-green-400 hover:scale-105'
+                }`}
+              >
+                Login
+            </Link>
+            <Link
+                key={'/signup'}
+                to={'/signup'}
+                className={`text-sm font-medium transition-all duration-200 ${
+                  location.pathname === '/signup'
+                    ? 'text-green-500 scale-105'
+                    : 'text-gray-100 hover:text-green-400 hover:scale-105'
+                }`}
+              >
+                Sign Up
+            </Link>
+        </div>
         </div>
       </div>
 
@@ -26,7 +52,7 @@ function CourseRegistration() {
            
            {/* based on preview status */}
 
-           {previewStatus ? <SeatQuery/> : <>
+           {previewStatus ? <> <SeatQuery/> </>: <>
             <div className="text-6xl mb-6">🚀</div>
             <h2 className="text-2xl font-bold text-green-400 mb-4">
               Coming Soon
@@ -39,8 +65,8 @@ function CourseRegistration() {
             </p>
             <div className="flex justify-center space-x-4">
             <button 
-                className="px-6 py-3 bg-gray-500 text-gray-300 rounded-lg font-semibold opacity-50 pointer-events-none"
-                onClick = {() => setPreviewStatus(false)}
+                className="px-6 py-3 bg-gray-500 text-gray-300 rounded-lg font-semibold opacity-50"
+                onClick = {() => setPreviewStatus(true)}
               >
                 Coming Soon
               </button>
