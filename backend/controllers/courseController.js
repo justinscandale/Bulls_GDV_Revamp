@@ -82,7 +82,7 @@ const getCourseNumbers = async(req, res)=>{
     const prefix = req.query.prefix; //get prefix from query
     
     try{
-        const result = await query(`SELECT DISTINCT course_num FROM course_grades WHERE course_prefix = '${prefix.toUpperCase()}'`)
+        const result = await query(`SELECT DISTINCT course_num FROM course_grades WHERE course_prefix = $1`, [prefix.toUpperCase()]);
         res.status(200).json(result.rows);
         
     } catch(err) {
