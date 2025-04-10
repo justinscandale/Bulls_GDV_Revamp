@@ -6,8 +6,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + React</title>
   </head>
-  <body>
-    <div id="root"></div>
+  <body style="background-color: rgba(24,33,49,255);">
+    <div id="root" >
+      <div style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); color: rgba(0, 165, 98, 60); padding: 10px; font-size: 24px; display: flex; align-items: center; gap: 10px;">
+        Loading...
+          <div class="light"></div>
+          <div class="light"></div>
+      </div>
+    </div>
+    
+    <style>
+      .light {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: rgba(0, 165, 98, 60);
+        animation: bounce 1.5s infinite alternate;
+      }
+    
+      .light:nth-child(1) {
+        animation-delay: 0s;
+      }
+    
+      .light:nth-child(2) {
+        animation-delay: 0.75s;
+      }
+    
+      @keyframes bounce {
+        0% {
+          transform: translateY(0);
+        }
+        100% {
+          transform: translateY(-15px);
+        }
+      }
+    </style>
+
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
