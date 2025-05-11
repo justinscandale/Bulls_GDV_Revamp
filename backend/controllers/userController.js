@@ -14,14 +14,16 @@ const signup = async (req,res) => {
         res.status(400);
         //throw new Error('Info not valid');
         res.json("not valid info");
+        return;
     }
     //check if user exsists
     const userExsists = await query(`SELECT DISTINCT id FROM users WHERE email = $1`, [email]);
     if(userExsists.rowcount == 1){
         res.status(400);
         //error
-        //throw new Error('User exsists');;
+        //throw new Error('User exsists');
         res.json(userExsists);
+        return;
     }
 
     //Hash password
@@ -67,7 +69,12 @@ const login = async (req,res) => {
       {
         if(userCheck.rows[0].password && (await bcrypt.compare(password, userCheck.rows[0].password)))
           {
-            res.status(200).json("succes");
+            res.status(200)
+            res.json(
+                {
+                    token:  generateToken(newuser.rows[0].id.toString())
+                }
+            );
           }
         else{
             res.status(400).json('wrong pass');
