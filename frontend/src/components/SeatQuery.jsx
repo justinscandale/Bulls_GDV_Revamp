@@ -3,12 +3,40 @@ import {fetchPrefixes, fetchNums, fetchSeats} from '../api/seatsApi';
 import Select from 'react-select';
 
 const SeatQuery = () => {
-
     const [prefixOptions, setPrefixOptions] = useState({});
     const [numOptions, setNumOptions] = useState({});
     const [selectedPrefix, setSelectedPrefix] = useState('');
     const [selectedNum, setSelectedNum] = useState('');
     const [seatData, setSeatData] = useState([]);
+    const [savedCourses, setSavedCourses] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
+
+    // Fetch saved courses when component mounts
+    useEffect(() => {
+        const fetchSavedCourses = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return;
+
+                const response = await fetch('/api/saved-courses', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setSavedCourses(data);
+                }
+            } catch (error) {
+                console.error('Error fetching saved courses:', error);
+            }
+        };
+
+        fetchSavedCourses();
+
+    }, []);
 
     useEffect(() => {
         //fetch prefixes from backend
@@ -51,6 +79,48 @@ const SeatQuery = () => {
         const course_num = e.value;
         if(!course_num) return;
         setSelectedNum(course_num);
+    };
+
+    const handleSaveCourse = async (course_crn, isChecked) => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setError('Please login to save courses');
+                return;
+            }
+
+            const url = isChecked 
+                ? `/api/saved-courses/${course_crn}`
+                : '/api/saved-courses';
+
+            const method = isChecked ? 'DELETE' : 'POST';
+            const body = isChecked ? undefined : JSON.stringify({ course_crn: course_crn.toString() });
+
+            const response = await fetch(url, {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                ...(body && { body })
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.message || 'Failed to update saved course');
+            }
+
+            // Update saved courses list
+            if (isChecked) {
+                setSavedCourses(prev => prev.filter(course => course.course_crn !== course_crn));
+            } else {
+                const newCourse = seatData.find(seat => seat.course_crn === course_crn);
+                setSavedCourses(prev => [...prev, newCourse]);
+            }
+        } catch (error) {
+            setError(error.message);
+            console.error('Error saving course:', error);
+        }
     };
 
     return (
@@ -122,13 +192,13 @@ const SeatQuery = () => {
                 <input 
                     type="checkbox" 
                     className="ml-4 w-6 h-6"
-                    onChange ={(e)=>{alert(`${e.target.checked ? 'Added to cart' : 'Removed from cart'}`)}}
+                    checked={savedCourses.some(course => course.course_crn === seat.course_crn)}
+                    onChange={(e) => handleSaveCourse(seat.course_crn, !(e.target.checked))}
                 />
             </div>
                     </div>
                 ))}
             </div>
-
         </div>
     )
 }; 

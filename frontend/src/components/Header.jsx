@@ -22,7 +22,7 @@ function Header() {
   const navLinks = [
     { path: '/', label: 'Home' },
     { path: '/grade-distribution', label: 'Grade Distribution' },
-    { path: '/course-registration', label: 'Course Registration' },
+    { path: '/course-registration', label: 'Course Availability' },
   ];
 
   return (

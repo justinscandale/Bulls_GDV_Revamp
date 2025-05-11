@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const SavedSeats = () => {
+const SavedCourses = () => {
     const [savedCourses, setSavedCourses] = useState([]);
     const [error, setError] = useState('');
 
@@ -75,29 +75,33 @@ const SavedSeats = () => {
             {savedCourses.map((course) => (
                 <div 
                     key={course.course_crn}
-                    className={`${course.seats_available > 0 ? 'bg-green-900' : 'bg-red-900'} 
-                        text-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200`}
+                    className="bg-gray-800/50 rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow duration-200"
                 >
                     <div className="flex justify-between items-start mb-3">
                         <div>
-                            <h3 className="text-xl font-bold">
-                                {course.course_prefix} {course.course_number} - {course.course_section}
+                            <h3 className="text-lg font-semibold text-white">
+                                {course.course_prefix} {course.course_number}
                             </h3>
-                            <p className="text-gray-200 mt-1">{course.course_title}</p>
+                            <p className="text-gray-300 text-sm">{course.course_title}</p>
                         </div>
+                        <span className={`px-2 py-1 rounded text-sm ${
+                            course.seats_available > 0 
+                                ? 'bg-green-500/20 text-green-300' 
+                                : 'bg-red-500/20 text-red-300'
+                        }`}>
+                            {course.seats_available} seats
+                        </span>
                     </div>
                     
-                    <div className="space-y-2 text-gray-200">
+                    <div className="space-y-2 text-sm text-gray-400">
+                        <p>Section: {course.course_section}</p>
                         <p>CRN: {course.course_crn}</p>
-                        <p className="text-lg font-semibold">
-                            Seats Open: {course.seats_available}
-                        </p>
                     </div>
 
                     <div className="mt-4 flex justify-end">
                         <button 
                             onClick={() => handleRemoveCourse(course.course_crn)}
-                            className="bg-red-500/20 hover:bg-red-500/30 text-red-200 px-3 py-1 rounded transition-colors"
+                            className="text-red-400 hover:text-red-300 text-sm font-medium transition-colors"
                         >
                             Remove
                         </button>
@@ -108,4 +112,4 @@ const SavedSeats = () => {
     );
 };
 
-export default SavedSeats;
+export default SavedCourses; 

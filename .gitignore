@@ -2,4 +2,3 @@ ToDo.txt
 backend/.env
 *.txt
 .DS_Store
-__pycache__

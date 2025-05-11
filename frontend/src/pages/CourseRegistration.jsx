@@ -1,81 +1,96 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
 import SeatQuery from "../components/SeatQuery";
 import SeatViewer from "../components/SavedSeats";
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 function CourseRegistration() {
-  
-   const [previewStatus, setPreviewStatus] = useState(false);
+    const navigate = useNavigate();
+    const [view, setView] = useState('registration');
+    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
 
-  return (
-    <div className="w-full">
-      {/* Header Section */}
-      <div className="w-full bg-gray-800/30 border-b border-gray-700/50">
-        <div className="max-w-[2000px] mx-auto px-6 py-12 text-center">
-          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent">
-            Course Registration
-          </h1>
-          <p className="text-xl text-gray-300">
-            Track course availability and registration trends in real-time
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-10 py-3">
-             <Link
-                key={'/login'}
-                to={'/login'}
-                className={`text-sm font-medium transition-all duration-200 ${
-                  location.pathname === '/login'
-                    ? 'text-green-500 scale-105'
-                    : 'text-gray-100 hover:text-green-400 hover:scale-105'
-                }`}
-              >
-                Login
-            </Link>
-            <Link
-                key={'/signup'}
-                to={'/signup'}
-                className={`text-sm font-medium transition-all duration-200 ${
-                  location.pathname === '/signup'
-                    ? 'text-green-500 scale-105'
-                    : 'text-gray-100 hover:text-green-400 hover:scale-105'
-                }`}
-              >
-                Sign Up
-            </Link>
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        setIsLoggedIn(!!token);
+    }, []);
+
+    return (
+        <div className="max-w-4xl mx-auto mt-10 p-4 sm:p-6">
+            {/* Header Section - Moved above navigation */}
+            <div className="w-full border-b border-gray-700/50 mb-6">
+                <div className="max-w-[2000px] mx-auto px-4 sm:px-6 py-4 sm:py-6 text-center">
+                    <h1 className="text-3xl sm:text-4xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent">
+                        Course Availability Tracker
+                    </h1>
+                    <p className="text-lg sm:text-xl text-gray-300">
+                        Track course availability and registration trends in real-time
+                    </p>
+                    {!isLoggedIn && (
+                        <div className="mt-3 sm:mt-4 text-sm text-gray-400">
+                            Login to save courses and get notified when seats become available
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row justify-between gap-4 mb-6">
+                <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+                    {isLoggedIn && (
+                        <>
+                            <button
+                                onClick={() => setView('registration')}
+                                className={`w-1/3 sm:w-auto px-3 sm:px-4 py-2 ${view === 'registration' ? 'bg-green-600' : 'bg-gray-600'} hover:bg-green-700 text-white rounded-md transition-colors text-sm sm:text-base`}
+                            >
+                                Search Courses
+                            </button>
+                            <button
+                                onClick={() => setView('saved')}
+                                className={`w-1/3 sm:w-auto px-3 sm:px-4 py-2 ${view === 'saved' ? 'bg-green-600' : 'bg-gray-600'} hover:bg-green-700 text-white rounded-md transition-colors text-sm sm:text-base`}
+                            >
+                                Saved Courses
+                            </button>
+                        </>
+                    )}
+                </div>
+                {isLoggedIn ? (
+                    <button
+                        onClick={() => {
+                            localStorage.removeItem('token');
+                            setIsLoggedIn(false);
+                            setView('registration');
+                        }}
+                        className="w-full sm:w-auto px-3 sm:px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors text-sm sm:text-base"
+                    >
+                        Logout
+                    </button>
+                ) : (
+                    <button
+                        onClick={() => navigate('/oauth')}
+                        className="w-full sm:w-auto px-3 sm:px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors text-sm sm:text-base"
+                    >
+                        Login to Save Courses
+                    </button>
+                )}
+            </div>
+
+            {view === 'registration' ? (
+                <div className="w-full">
+                    {/* Main Content */}
+                    <div className="w-full py-8 sm:py-16 px-4 sm:px-6">
+                        <div className="max-w-[2000px] mx-auto"> 
+                            <div className="backdrop-blur-sm rounded-2xl p-6 sm:p-12 border border-gray-700 text-center">
+                                <SeatQuery/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <div>
+                    {/* Saved courses content */}
+                    <SeatViewer />
+                </div>
+            )}
         </div>
-        </div>
-      </div>
-
-      {/* Coming Soon Content */}
-      <div className="w-full py-16 px-6">
-        <div className="max-w-[2000px] mx-auto"> 
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-12 border border-gray-700 text-center">
-           
-           {/* based on preview status */}
-
-           {previewStatus ? <> <SeatQuery/> </>: <>
-            <div className="text-6xl mb-6">🚀</div>
-            <h2 className="text-2xl font-bold text-green-400 mb-4">
-              Coming Soon
-            </h2>
-
-            <p className="text-gray-400 max-w-2xl mx-auto mb-8">
-              I'm currently working hard to bring you real-time course registration tracking. 
-              Soon you'll be able to monitor seat availability, waitlist status, and 
-              receive notifications when spots open up in your desired courses.
-            </p>
-            <div className="flex justify-center space-x-4">
-            <button 
-                className="px-6 py-3 bg-gray-500 text-gray-300 rounded-lg font-semibold opacity-50"
-                onClick = {() => setPreviewStatus(true)}
-              >
-                Coming Soon
-              </button>
-            </div> </>}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+    );
 }
 
 export default CourseRegistration;
