@@ -85,8 +85,7 @@ for i, row in enumerate(rows):
         "course_number": number,
         "course_section": sec,
         "course_crn": crn,
-        "seats_available": seats_available,
-        "last_seats": None  # Will be populated from DB
+        "seats_available": seats_available
     })
 
 # Create DataFrame from data list
@@ -106,7 +105,7 @@ with engine.connect() as connection:
     for _, row in df.iterrows():
         # Check if the course exists and get current seats
         check_query = text("""
-            SELECT course_crn, seats_available, last_seats 
+            SELECT course_crn, seats_available 
             FROM course_seats 
             WHERE course_crn = :crn
         """)
@@ -115,11 +114,11 @@ with engine.connect() as connection:
         if result:
             # Update existing course
             current_seats = int(row['seats_available'])
-            last_seats = result.last_seats if result.last_seats is not None else current_seats
+            previous_seats = int(result.seats_available)
             
-            # Only update last_seats if seats_available changed
-            if current_seats != result.seats_available:
-                last_seats = result.seats_available
+            # Check if seats went from <=0 to >0 AND NOTIFY USERS
+            if previous_seats <= 0 and current_seats > 0:
+                print(f"Seats became available for CRN {row['course_crn']}: {current_seats} seats")
             
             update_query = text("""
                 UPDATE course_seats 
@@ -127,8 +126,7 @@ with engine.connect() as connection:
                     course_prefix = :prefix,
                     course_number = :number,
                     course_section = :section,
-                    seats_available = :seats,
-                    last_seats = :last_seats
+                    seats_available = :seats
                 WHERE course_crn = :crn
             """)
             connection.execute(update_query, {
@@ -137,15 +135,14 @@ with engine.connect() as connection:
                 "number": row['course_number'],
                 "section": row['course_section'],
                 "seats": current_seats,
-                "last_seats": last_seats,
                 "crn": row['course_crn']
             })
         else:
             # Insert new course
             insert_query = text("""
                 INSERT INTO course_seats 
-                (course_title, course_prefix, course_number, course_section, course_crn, seats_available, last_seats)
-                VALUES (:title, :prefix, :number, :section, :crn, :seats, :last_seats)
+                (course_title, course_prefix, course_number, course_section, course_crn, seats_available)
+                VALUES (:title, :prefix, :number, :section, :crn, :seats)
             """)
             connection.execute(insert_query, {
                 "title": row['course_title'],
@@ -153,11 +150,30 @@ with engine.connect() as connection:
                 "number": row['course_number'],
                 "section": row['course_section'],
                 "crn": row['course_crn'],
-                "seats": row['seats_available'],
-                "last_seats": row['seats_available']  # For new courses, last_seats = current seats
+                "seats": row['seats_available']
             })
     
     # Commit the transaction
+    connection.commit()
+
+    # Delete from saved_courses first
+    delete_saved_query = text("""
+        DELETE FROM saved_courses 
+        WHERE course_crn NOT IN (
+            SELECT unnest(ARRAY[:crns])
+        )
+    """)
+    connection.execute(delete_saved_query, {"crns": df['course_crn'].astype(int).tolist()})
+    connection.commit()
+
+    # Then delete from course_seats
+    delete_query = text("""
+        DELETE FROM course_seats 
+        WHERE course_crn NOT IN (
+            SELECT unnest(ARRAY[:crns])
+        )
+    """)
+    connection.execute(delete_query, {"crns": df['course_crn'].astype(int).tolist()})
     connection.commit()
 
 print(f"Successfully processed {len(df)} courses")
