@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 
 # Define headers to avoid sending unnecessary identifying information
 headers = {
@@ -81,39 +81,86 @@ for i, row in enumerate(rows):
     # Add row to data list
     data.append({
         "course_title": title,
-        "Ccurse_prefix": prefix,
+        "course_prefix": prefix,
         "course_number": number,
         "course_section": sec,
-        "crn": crn,
-        "seats_available": seats_available
+        "course_crn": crn,
+        "seats_available": seats_available,
+        "last_seats": None  # Will be populated from DB
     })
 
 # Create DataFrame from data list
 df = pd.DataFrame(data)
 
-# Export to CSV
-df.to_csv('data/seat_course_data.csv', index=False)
-
-'''
-CREATE TABLE course_seats (
-    course_title text,
-    course_prefix text,
-    course_number text,
-    course_section bigint,
-    course_crn bigint,
-    seats_available bigint
-);
-'''
 # PostgreSQL connection details
 host = 'localhost'
 dbname = 'justinscandale'
 user = 'justinscandale'
 password = 'your_password'
-port = '5432'  # Default PostgreSQL port
+port = '5432'
 engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{dbname}')
-df.to_sql('course_data', con=engine, if_exists='replace', index=False)
 
-print(f"Successfully exported {len(df)} courses to course_data.csv")
+# Create a connection
+with engine.connect() as connection:
+    # For each row in the DataFrame
+    for _, row in df.iterrows():
+        # Check if the course exists and get current seats
+        check_query = text("""
+            SELECT course_crn, seats_available, last_seats 
+            FROM course_seats 
+            WHERE course_crn = :crn
+        """)
+        result = connection.execute(check_query, {"crn": row['course_crn']}).fetchone()
+        
+        if result:
+            # Update existing course
+            current_seats = int(row['seats_available'])
+            last_seats = result.last_seats if result.last_seats is not None else current_seats
+            
+            # Only update last_seats if seats_available changed
+            if current_seats != result.seats_available:
+                last_seats = result.seats_available
+            
+            update_query = text("""
+                UPDATE course_seats 
+                SET course_title = :title,
+                    course_prefix = :prefix,
+                    course_number = :number,
+                    course_section = :section,
+                    seats_available = :seats,
+                    last_seats = :last_seats
+                WHERE course_crn = :crn
+            """)
+            connection.execute(update_query, {
+                "title": row['course_title'],
+                "prefix": row['course_prefix'],
+                "number": row['course_number'],
+                "section": row['course_section'],
+                "seats": current_seats,
+                "last_seats": last_seats,
+                "crn": row['course_crn']
+            })
+        else:
+            # Insert new course
+            insert_query = text("""
+                INSERT INTO course_seats 
+                (course_title, course_prefix, course_number, course_section, course_crn, seats_available, last_seats)
+                VALUES (:title, :prefix, :number, :section, :crn, :seats, :last_seats)
+            """)
+            connection.execute(insert_query, {
+                "title": row['course_title'],
+                "prefix": row['course_prefix'],
+                "number": row['course_number'],
+                "section": row['course_section'],
+                "crn": row['course_crn'],
+                "seats": row['seats_available'],
+                "last_seats": row['seats_available']  # For new courses, last_seats = current seats
+            })
+    
+    # Commit the transaction
+    connection.commit()
+
+print(f"Successfully processed {len(df)} courses")
 # Count how many <tr> tags are in the table
 num_rows = len(rows)
 print(f"Number of <tr> tags in the table: {num_rows}")
